@@ -58,10 +58,29 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+class Category(models.Model):
+    tipo_choices = [
+        ('reciclagem', 'Reciclagem'),
+        ('cosméticos', 'Cosméticos'),
+        ('velas', 'Velas'),
+        ('crochê', 'Crochê'),
+        ('bijuterias', 'Bijuterias')
+    ]
+    tipo = models.CharField(max_length=100, choices=tipo_choices, unique=True)
+    nome = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.tipo
+
+
 class Product(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='produtos')
+    categoria = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='produtos')
     nome = models.CharField(max_length=200)
     descricao = models.TextField()
     preco = models.FloatField()
     disponivel = models.BooleanField(default=True)
     imagem = models.ImageField(upload_to='product_images/')
+
+    def __str__(self):
+        return self.nome
