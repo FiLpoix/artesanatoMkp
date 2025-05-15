@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 
-# Create your models here.
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -33,41 +34,56 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(verbose_name='Nome de usuário', max_length=200)
-    email = models.EmailField(verbose_name='Email do usuário', max_length=200, unique=True)
+    username = models.CharField("Nome de usuário", max_length=200)
+    email = models.EmailField("Email", max_length=200, unique=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
 
-    is_artisan = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    is_customer = models.BooleanField(default=True)
-
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
 
     objects = UserManager()
 
     class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
-        db_table = 'user'
+        verbose_name = "Usuário"
+        verbose_name_plural = "Usuários"
+        db_table = "user"
 
     def __str__(self):
         return self.email
 
+
+class Artisan(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='artesões')
+    bio = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='clientes')
+
+    def __str__(self):
+        return self.user.username
+
+
 class Category(models.Model):
-    tipo_choices = [
+    TIPO_CHOICES = [
         ('reciclagem', 'Reciclagem'),
-        ('cosméticos', 'Cosméticos'),
+        ('cosmeticos', 'Cosméticos'),
         ('velas', 'Velas'),
-        ('crochê', 'Crochê'),
-        ('bijuterias', 'Bijuterias')
+        ('croche', 'Crochê'),
+        ('bijuterias', 'Bijuterias'),
     ]
-    tipo = models.CharField(max_length=100, choices=tipo_choices, unique=True)
+    tipo = models.CharField(max_length=100, choices=TIPO_CHOICES, unique=True)
     nome = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name = "Categoria"
+        verbose_name_plural = "Categorias"
+        db_table = "categoria"
 
     def __str__(self):
         return self.tipo
@@ -78,9 +94,13 @@ class Product(models.Model):
     categoria = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='produtos')
     nome = models.CharField(max_length=200)
     descricao = models.TextField()
-    preco = models.FloatField()
+    preco = models.DecimalField(verbose_name='Preço',  max_digits=10, decimal_places=2)
     disponivel = models.BooleanField(default=True)
     imagem = models.ImageField(upload_to='product_images/')
+
+    class Meta:
+        verbose_name = "Produto"
+        verbose_name_plural = "Produtos"
 
     def __str__(self):
         return self.nome
