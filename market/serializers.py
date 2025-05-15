@@ -1,6 +1,6 @@
 from django.urls import reverse
 from rest_framework import serializers
-from .models import User, Category, Product, Artisan, Customer
+from .models import User, Category, Product, Artisan, Customer, Transaction
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,4 +25,9 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
+        fields = '__all__'
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
         fields = '__all__'

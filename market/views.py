@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
-from .models import User, Category, Product, Artisan, Customer
-from .serializers import UserSerializer, CategorySerializer, ProductSerializer, ArtisanSerializer, CustomerSerializer
+from .models import User, Category, Product, Artisan, Customer, Transaction
+from .serializers import UserSerializer, CategorySerializer, ProductSerializer, ArtisanSerializer, CustomerSerializer, TransactionSerializer
 
 # Create your views here.
 
@@ -24,3 +24,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer

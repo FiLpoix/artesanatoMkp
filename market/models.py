@@ -88,7 +88,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='produtos')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='produtos')
     categoria = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='produtos')
     nome = models.CharField(max_length=200)
     descricao = models.TextField()
@@ -102,3 +102,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class Transaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.DecimalField(verbose_name='quantidade', max_digits=10, decimal_places=2)
+    STATUS_VISITANTE = [
+        ('EM_ANDAMENTO', 'Em Andamento'),
+        ('CONCLUIDO','Transação concluida')
+    ]
+    
+    status =  models.CharField( verbose_name='status', max_length=30,choices=STATUS_VISITANTE, default='EM_ANDAMENTO')
+    timestamp = models.DateTimeField(auto_now_add=True)
